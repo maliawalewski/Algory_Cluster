@@ -23,15 +23,19 @@ def get_ratios(symbol, period='quarterly'):
     data = response.json()
     return data
 
-def get_next_available(index, price_df): # reports come out on Saturday, but there is no market info for Saturday. Align report with Monday price data.
+# reports come out on Saturday, but there is no market info for Saturday. Align report with Monday price data.
+def get_next_available(index, price_df): 
     count = 0
-    while True:
-        count+=1
+    while count < 30: 
         index = index + pd.Timedelta(days=1)
         if index in price_df.index:
             return price_df.loc[[index]]
-        elif count > 30: # raise error if function fails to find price data
-            raise Exception('Failed to fetch price data')
+        count += 1 
+    
+    # Instead of error return None
+    print(f"No valid price data found for {index}, skipping stock...")
+    return None
+
         
 def get_df(symbol, start_date, end_date):
     # Get data from APIs
@@ -44,13 +48,28 @@ def get_df(symbol, start_date, end_date):
     balance_df = pd.DataFrame(balance)
     ratios_df = pd.DataFrame(ratios)
 
+    print(f"\n===== debug {symbol} =====")
+    print("Price Data Shape:", price_df.shape)
+    print("Price Data Columns:", price_df.columns)
+
+    # If price_df is empty or missing 'date', skip this stock
+    if price_df.empty or 'date' not in price_df.columns:
+        print(f"WARNING: No valid price data for {symbol}, skipping...")
+        return None
+
     # Convert dates and set indices
     price_df['date'] = pd.to_datetime(price_df['date'])
     price_df.set_index('date', inplace=True)
 
+    if balance_df.empty or 'date' not in balance_df.columns:
+        print(f"WARNING: No valid balance sheet data for {symbol}, skipping...")
+        return None
     balance_df['date'] = pd.to_datetime(balance_df['date'])
     balance_df.set_index('date', inplace=True)
 
+    if ratios_df.empty or 'date' not in ratios_df.columns:
+        print(f"WARNING: No valid ratios data for {symbol}, skipping...")
+        return None
     ratios_df['date'] = pd.to_datetime(ratios_df['date'])
     ratios_df.set_index('date', inplace=True)
 
@@ -93,3 +112,27 @@ def get_df(symbol, start_date, end_date):
     df.columns = list(balance_df.columns) + list(corresponding_price.columns) + list(corresponding_ratios.columns)
     
     return df
+
+all_data = []
+for symbol in sp_list[:500]:  # num stocks at a time -- CHANGE if needed
+    df = get_df(symbol, '2023-01-01', '2024-01-01')
+    if df is not None and not df.empty:
+        # df.insert(0, "Symbol", symbol)  # idk if we need bc now there are 2 symbols 
+        all_data.append(df)
+
+# Save data to CSV only if there is valid data
+if all_data:
+    final_df = pd.concat(all_data, ignore_index=True)
+    
+    # date exists
+    if 'date' in final_df.columns:
+        final_df = final_df.sort_values(by=['date', 'Symbol'])
+
+    final_df.to_csv('stock_data_23_24.csv', index=False)
+    print("Data saved to csv")
+else:
+    print("No valid data")
+
+
+
+
