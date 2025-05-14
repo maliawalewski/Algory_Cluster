@@ -18,7 +18,7 @@ The goal is to identify meaningful groupings that can support investment decisio
 ## Structure
 - `data/`: Raw and cleaned datasets
 - `features/`: Feature engineering notebooks for transforming financial metrics into model inputs
-- `clustering/`: Core unsupervised ML model (ML2.ipynb) used to group stocks by financial and return-based features
+- `clustering/`: Core unsupervised ML model (stock_clustering_model.ipynb) used to group stocks by financial and return-based features
 - `analysis/`: Stock-specific and quarterly return analysis notebooks (paypal_analysis.ipynb, quarterlyARS.ipynb, etc.)
 - `data_collection/`: Scripts for pulling quarterly stock data
 
