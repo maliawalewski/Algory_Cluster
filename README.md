@@ -13,13 +13,14 @@ The goal is to identify meaningful groupings that can support investment decisio
 - Certain clusters consistently outperformed others in specific market conditions
 - Fundamental signals (e.g. P/E ratio, debt/equity) aligned with cluster groupings
 - Useful for building intuition about sector-agnostic return patterns
+- Includes stock-specific notebooks (e.g. EL_analysis.ipynb) to explore individual positioning within clusters and support actionable interpretation
 
 ## Structure
 - `data/`: Raw and cleaned datasets
-- `features/`: Feature generation and preprocessing scripts
-- `clustering/`: Clustering models and evaluation
-- `analysis/`: Cluster-level and stock-specific analysis notebooks, including position diagnostics and interpretation tools
-- `data_collection/`: Tools for scraping and updating data
+- `features/`: Feature engineering notebooks for transforming financial metrics into model inputs
+- `clustering/`: Core unsupervised ML model (ML2.ipynb) used to group stocks by financial and return-based features
+- `analysis/`: Stock-specific and quarterly return analysis notebooks (paypal_analysis.ipynb, quarterlyARS.ipynb, etc.)
+- `data_collection/`: Scripts for pulling quarterly stock data
 
 ## Collaborators
 - [@parkercarrus](https://github.com/parkercarrus)
